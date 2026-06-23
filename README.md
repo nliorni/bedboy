@@ -31,16 +31,20 @@ does a fast interval overlap.
 ## Install
 
 
-Or straight from GitHub:
+From GitHub:
 
 ```bash
-pip install git+https://github.com/your-org/bedboy.git
+conda create -n bedboy python=3.11
+conda activate bedboy
+pip install git+https://github.com/nliorni/bedboy.git
 ```
 
 From source (editable, for development):
 
 ```bash
-git clone https://github.com/your-org/bedboy.git
+conda create -n bedboy python=3.11
+conda activate bedboy
+git clone https://github.com/nliorni/bedboy.git
 cd bedboy
 pip install -e ".[dev]"
 ```
