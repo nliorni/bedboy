@@ -2,7 +2,7 @@
 
 # BedBoy ⌐■-■
 
-**The baddest BED annotator in the genome.**
+**The BEDdest annotator in the world**
 
 Give it an unannotated BED file and a genome build — it adds a gene-name column. That's it.
 
