@@ -1,0 +1,3 @@
+##description: test
+chr1	TEST	gene	1001	2000	.	+	.	gene_id "G1"; gene_name "AAA"; gene_type "protein_coding";
+chr2	TEST	gene	5001	6000	.	-	.	gene_id "G3"; gene_name "CCC"; gene_type "protein_coding";

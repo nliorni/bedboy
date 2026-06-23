@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bedboy"
+version = "1.0.0"
+description = "The baddest BED annotator in the genome — add gene names to BED files for hg19/hg38/T2T."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "BedBoy contributors" }]
+keywords = ["bioinformatics", "bed", "genomics", "annotation", "gene", "hg38", "hg19", "t2t", "chm13"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+    "requests>=2.28",
+    "numpy>=1.21",
+    "ncls>=0.0.66",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-cov", "ruff"]
+
+[project.scripts]
+bedboy = "bedboy.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/nliorni/bedboy"
+Repository = "https://github.com/nliorni/bedboy"
+Issues = "https://github.com/nliorni/bedboy/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bedboy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
