@@ -178,4 +178,4 @@ ruff check .
 
 MIT — see [LICENSE](LICENSE).
 
-<div align="center"><sub>⌐■-■ stay bad.</sub></div>
+<div align="center"><sub>⌐■-■ stay BED.</sub></div>
