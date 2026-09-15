@@ -37,6 +37,8 @@ jobs:
           ruff format --check .
 
       - name: Run offline tests
+        env:
+          TERM: xterm
         run: pytest --cov=bedboy --cov-report=term-missing
 
       - name: Build and install the wheel

@@ -229,8 +229,23 @@ def test_corrupt_gzip_fails_without_publishing_output(tmp_path):
     assert list(tmp_path.iterdir()) == [path]
 
 
-def test_no_color_environment_applies_to_mascot():
-    result = run(env={"NO_COLOR": "1", "FORCE_COLOR": "1"})
+@pytest.mark.parametrize("term", ["dumb", "xterm", "xterm-256color"])
+def test_no_color_environment_applies_to_mascot(term):
+    result = run(env={"TERM": term, "NO_COLOR": "1", "FORCE_COLOR": "1"})
     assert result.exit_code == 0
     assert "B E D  B O Y" in result.stderr
     assert "\x1b" not in result.stderr
+
+
+def test_no_color_flag_overrides_forced_terminal_output():
+    result = annotate(
+        DATA / "mini_input.bed",
+        "-o",
+        "-",
+        "--no-color",
+        env={"TERM": "xterm", "NO_COLOR": "", "FORCE_COLOR": "1", "TTY_COMPATIBLE": "1"},
+    )
+    assert result.exit_code == 0, result.output
+    assert "BedBoy report" in result.stderr
+    assert "\x1b" not in result.stderr
+    assert result.stdout.splitlines()[0] == "chr1\t1600\t1700\tAAA"

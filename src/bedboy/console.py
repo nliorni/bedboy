@@ -28,6 +28,9 @@ def make_console(no_color: bool = False, quiet: bool = False, stderr: bool = Tru
     return Console(
         theme=BEDBOY_THEME,
         no_color=disable,
+        # Rich's no_color removes colors but keeps bold/italic ANSI styles.
+        # Explicit plain output must also override FORCE_COLOR/TTY_COMPATIBLE.
+        force_terminal=False if disable else None,
         highlight=False,
         stderr=stderr,
         quiet=quiet,

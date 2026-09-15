@@ -24,6 +24,8 @@ semantic versioning.
 - Wheel build/install smoke tests in CI, including Python 3.13.
 
 ### Fixed
+- Plain output now suppresses all ANSI styling even when `FORCE_COLOR` or
+  `TTY_COMPATIBLE` is set; color tests explicitly cover different terminal types.
 - Replaced the broken T2T CAT/Liftoff genePred URL with the assembly hub GFF3.
 - Quiet mode no longer hides errors; invalid sources and I/O failures produce
   readable errors instead of tracebacks.
