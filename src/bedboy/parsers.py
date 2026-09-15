@@ -3,12 +3,22 @@
 Every parser yields gene-body intervals in **0-based half-open** coordinates
 with chromosomes run through :func:`bedboy.utils.normalize_chrom`.
 """
+
 from __future__ import annotations
 
 import re
 from collections.abc import Iterator
+from urllib.parse import unquote
 
-from .utils import Gene, normalize_chrom, open_text
+from .utils import (
+    Gene,
+    bed_fields,
+    genepred_offset,
+    is_bed_header,
+    normalize_chrom,
+    open_text,
+    valid_interval,
+)
 
 _GTF_ATTR = re.compile(r'(\w+)\s+"([^"]*)"')
 _GFF_GENE_TYPES = {"gene", "pseudogene", "ncrna_gene", "snrna_gene", "rrna_gene"}
@@ -24,27 +34,23 @@ def parse_genepred(path: str) -> Iterator[Gene]:
         for line in fh:
             if not line.strip() or line.startswith("#"):
                 continue
-            c = line.rstrip("\n").split("\t")
-            if len(c) < 11:
-                continue
+            c = line.rstrip("\r\n").split("\t")
             # Detect a leading 'bin' column. genePred(Ext) layout, after the
             # optional bin: name, chrom, strand, txStart, txEnd, cdsStart,
             # cdsEnd, exonCount, exonStarts, exonEnds, score, name2, ...
-            if c[0].isdigit() and len(c) > 3 and c[3] in ("+", "-"):
-                chrom, txs, txe, cds_s, cds_e = c[2], c[4], c[5], c[6], c[7]
-                name2 = c[12] if len(c) > 12 else c[1]
-            elif len(c) > 2 and c[2] in ("+", "-"):
-                chrom, txs, txe, cds_s, cds_e = c[1], c[3], c[4], c[5], c[6]
-                name2 = c[11] if len(c) > 11 else c[0]
-            else:
+            offset = genepred_offset(c)
+            if offset is None:
                 continue
+            c = c[offset:]
+            chrom, txs, txe, cds_s, cds_e = c[1], c[3], c[4], c[5], c[6]
+            name2 = c[11] if len(c) > 11 and c[11].strip() not in {"", "."} else c[0]
             try:
                 start, end = int(txs), int(txe)
                 coding = int(cds_s) < int(cds_e)
             except ValueError:
                 continue
             name = (name2 or "").strip()
-            if name:
+            if name and name != "." and valid_interval(start, end) and start < end:
                 # genePred has no biotype column; a non-empty CDS marks coding.
                 biotype = "protein_coding" if coding else "non_coding"
                 yield Gene(normalize_chrom(chrom), start, end, name, biotype)
@@ -57,8 +63,9 @@ def _gtf_attrs(field: str) -> dict[str, str]:
 def parse_gtf(path: str) -> Iterator[Gene]:
     """GENCODE / Ensembl GTF. Uses ``gene`` features when present, else collapses
     transcript/exon lines by ``gene_id``. Coordinates are 1-based -> converted."""
-    genes: dict[str, Gene] = {}
-    fallback: dict[str, list] = {}
+    # IDs may recur on other contigs (e.g. pseudoautosomal X/Y genes).
+    genes: dict[tuple[str, str, str], Gene] = {}
+    fallback: dict[tuple[str, str, str], Gene] = {}
 
     with open_text(path) as fh:
         for line in fh:
@@ -73,32 +80,36 @@ def parse_gtf(path: str) -> Iterator[Gene]:
                 end = int(c[4])
             except ValueError:
                 continue
+            if not valid_interval(start, end) or start == end:
+                continue
             attrs = _gtf_attrs(c[8])
             gid = attrs.get("gene_id", "")
             name = attrs.get("gene_name") or gid
             biotype = attrs.get("gene_type") or attrs.get("gene_biotype") or ""
             chrom = normalize_chrom(c[0])
+            key = (chrom, c[6], gid or name)
+            if not name or name == ".":
+                continue
 
             if feature == "gene":
-                if name:
-                    genes[gid or name] = Gene(chrom, start, end, name, biotype)
-            else:
-                key = gid or name
-                if not key:
+                genes[key] = Gene(chrom, start, end, name, biotype)
+                fallback.pop(key, None)
+            elif feature in {"transcript", "exon", "CDS", "start_codon", "stop_codon", "UTR"}:
+                if key in genes:
                     continue
                 rec = fallback.get(key)
                 if rec is None:
-                    fallback[key] = [chrom, start, end, name, biotype]
+                    fallback[key] = Gene(chrom, start, end, name, biotype)
                 else:
-                    rec[1] = min(rec[1], start)
-                    rec[2] = max(rec[2], end)
+                    rec.start = min(rec.start, start)
+                    rec.end = max(rec.end, end)
+                    if attrs.get("gene_name"):
+                        rec.name = name
+                    if biotype:
+                        rec.biotype = biotype
 
-    if genes:
-        yield from genes.values()
-    else:  # GTF without explicit gene features
-        for chrom, start, end, name, biotype in fallback.values():
-            if name:
-                yield Gene(chrom, start, end, name, biotype)
+    yield from genes.values()
+    yield from fallback.values()
 
 
 def _gff_attrs(field: str) -> dict[str, str]:
@@ -106,7 +117,7 @@ def _gff_attrs(field: str) -> dict[str, str]:
     for kv in field.split(";"):
         if "=" in kv:
             k, v = kv.split("=", 1)
-            out[k.strip()] = v.strip()
+            out[k.strip()] = unquote(v.strip())
     return out
 
 
@@ -114,6 +125,8 @@ def parse_gff3(path: str) -> Iterator[Gene]:
     """GFF3 (e.g. UCSC/GENCODE GFF3). Emits gene-type features. 1-based -> 0-based."""
     with open_text(path) as fh:
         for line in fh:
+            if line.rstrip() == "##FASTA":
+                break
             if not line or line.startswith("#"):
                 continue
             c = line.rstrip("\n").split("\t")
@@ -128,8 +141,8 @@ def parse_gff3(path: str) -> Iterator[Gene]:
                 continue
             a = _gff_attrs(c[8])
             name = a.get("gene_name") or a.get("gene") or a.get("Name") or a.get("ID", "")
-            biotype = a.get("gene_biotype") or a.get("biotype") or ""
-            if name:
+            biotype = a.get("gene_biotype") or a.get("gene_type") or a.get("biotype") or ""
+            if name and name != "." and valid_interval(start, end) and start < end:
                 yield Gene(normalize_chrom(c[0]), start, end, name, biotype)
 
 
@@ -137,9 +150,9 @@ def parse_bed(path: str) -> Iterator[Gene]:
     """A simple gene-BED: ``chrom  start  end  gene_name[  biotype]`` (0-based)."""
     with open_text(path) as fh:
         for line in fh:
-            if not line.strip() or line.startswith(("#", "track", "browser")):
+            if is_bed_header(line):
                 continue
-            c = line.rstrip("\n").split("\t")
+            c = bed_fields(line)
             if len(c) < 4:
                 continue
             try:
@@ -148,7 +161,7 @@ def parse_bed(path: str) -> Iterator[Gene]:
                 continue
             name = c[3].strip()
             biotype = c[4].strip() if len(c) > 4 and not c[4].strip().isdigit() else ""
-            if name:
+            if name and name != "." and valid_interval(start, end) and start < end:
                 yield Gene(normalize_chrom(c[0]), start, end, name, biotype)
 
 

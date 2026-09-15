@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="480" viewBox="0 0 1120 480" role="img" aria-labelledby="title desc">
+  <title id="title">BedBoy — gene names, without leaving bed</title>
+  <desc id="desc">A sleepy boy stays tucked into bed beneath a lavender quilt patterned with genomic intervals. A crescent moon and little stars light a midnight blue room.</desc>
+  <defs>
+    <linearGradient id="night" x2="1" y2="1">
+      <stop stop-color="#18243b"/>
+      <stop offset="1" stop-color="#101827"/>
+    </linearGradient>
+    <linearGradient id="quilt" x2="0" y2="1">
+      <stop stop-color="#b8adf0"/>
+      <stop offset="1" stop-color="#9285d1"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#93c5fd" stroke-opacity=".035"/>
+    </pattern>
+  </defs>
+  <rect width="1120" height="480" rx="24" fill="url(#night)"/>
+  <rect x="1" y="1" width="1118" height="478" rx="23" fill="none" stroke="#35415a"/>
+  <rect x="24" y="24" width="1072" height="432" rx="16" fill="url(#grid)"/>
+  <!-- Wordmark and quiet introduction -->
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <rect x="64" y="58" width="270" height="30" rx="15" fill="#24324a"/>
+    <circle cx="82" cy="73" r="4" fill="#b8adf0"/>
+    <text x="97" y="78" font-size="11" letter-spacing="1.8" fill="#d0c8f6">THE COZIEST BED ANNOTATOR</text>
+    <text x="61" y="194" font-size="86" letter-spacing="-4" font-weight="700" fill="#f6f3ec">BED<tspan font-weight="400" fill="#c4b5fd">boy</tspan><tspan dx="13" dy="-40" font-size="21" letter-spacing="1" fill="#fde6a3">zzz</tspan></text>
+    <text x="66" y="246" font-size="25" fill="#e7e4f4">Gene names, without leaving bed.</text>
+    <text x="66" y="283" font-size="16" fill="#a8b6cb">He stays under the covers. Your genes get uncovered.</text>
+    <g font-family="DejaVu Sans Mono, monospace" font-size="13">
+      <rect x="64" y="324" width="455" height="54" rx="10" fill="#101827" stroke="#35415a"/>
+      <text x="84" y="356" fill="#b8adf0">$ <tspan fill="#dee6f1">bedboy annotate targets.bed -g hg38</tspan></text>
+      <text x="66" y="418" font-size="11" letter-spacing="1.5" fill="#a8b6cb">hg19 / hg38 / T2T-CHM13</text>
+    </g>
+  </g>
+  <!-- Moon and stars -->
+  <path d="M986 72a32 32 0 1 0 33 48 29 29 0 0 1-33-48Z" fill="#fde6a3"/>
+  <g fill="#f1dca5">
+    <circle cx="648" cy="98" r="2"/><circle cx="866" cy="78" r="2"/>
+    <circle cx="1042" cy="208" r="2"/><circle cx="932" cy="176" r="1.5"/>
+    <path d="m758 72 2 7 7 2-7 2-2 7-2-7-7-2 7-2Z"/>
+    <path d="m1017 289 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/>
+    <path d="m619 207 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/>
+  </g>
+  <g font-family="DejaVu Sans Mono, monospace" fill="#c4b5fd" font-weight="700">
+    <text x="817" y="170" font-size="19" transform="rotate(-9 817 170)">z</text>
+    <text x="846" y="142" font-size="25" transform="rotate(8 846 142)">z</text>
+    <text x="884" y="108" font-size="31" transform="rotate(-6 884 108)">z</text>
+  </g>
+  <!-- Bed frame, pillow, boy and blanket -->
+  <ellipse cx="824" cy="389" rx="194" ry="16" fill="#0b1220"/>
+  <g stroke="#26334b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="637" y="211" width="21" height="185" rx="8" fill="#7595bb"/>
+    <rect x="653" y="276" width="329" height="74" rx="16" fill="#e7edf6"/>
+    <rect x="655" y="250" width="117" height="59" rx="26" fill="#f4f1e9" transform="rotate(-9 714 279)"/>
+    <path d="M713 240q6-32 32-29l52 34-63 23Z" fill="#93c5fd"/>
+    <circle cx="794" cy="244" r="9" fill="#f4f1e9"/>
+    <ellipse cx="715" cy="256" rx="34" ry="30" fill="#edbd9d" transform="rotate(12 715 256)"/>
+    <path d="M682 248q-7-30 24-33 23-6 34 13-11 0-16-6-1 13-13 16l-4-10q-3 14-25 20" fill="#514440" stroke="none"/>
+    <path d="M696 253q5 6 10 0m15 2q5 6 10 0" fill="none" stroke-width="2.5"/>
+    <path d="M709 268q4 3 8 0" fill="none" stroke-width="2"/>
+    <ellipse cx="690" cy="265" rx="5" ry="3" fill="#de9789" stroke="none"/>
+    <path d="M755 263q55-25 102-3 42 0 55 29h56q19 0 19 24v47H750Z" fill="url(#quilt)"/>
+    <path d="M755 263q-5 43-5 97" fill="none" stroke="#ded7fa" stroke-width="13"/>
+    <ellipse cx="758" cy="281" rx="12" ry="8" fill="#edbd9d" transform="rotate(-20 758 281)" stroke-width="3"/>
+    <path d="M658 355h322v16H658" fill="#7595bb"/>
+    <rect x="976" y="291" width="20" height="105" rx="8" fill="#7595bb"/>
+  </g>
+  <!-- Genomic intervals stitched across the quilt -->
+  <g stroke="#e4defb" stroke-width="2" stroke-linecap="round" fill="#e4defb">
+    <path d="M795 299h130m-140 29h150" fill="none" opacity=".75"/>
+    <rect x="805" y="293" width="22" height="12" rx="2"/>
+    <rect x="856" y="293" width="34" height="12" rx="2"/>
+    <rect x="906" y="293" width="12" height="12" rx="2"/>
+    <rect x="798" y="322" width="32" height="12" rx="2"/>
+    <rect x="855" y="322" width="15" height="12" rx="2"/>
+    <rect x="900" y="322" width="26" height="12" rx="2"/>
+  </g>
+  <text x="823" y="432" text-anchor="middle" font-family="DejaVu Sans Mono, monospace" font-size="12" letter-spacing="2" fill="#b8adf0">STAY IN BED.</text>
+</svg>

@@ -1,4 +1,5 @@
 """End-to-end-ish unit tests for BedBoy."""
+
 import io
 from pathlib import Path
 
@@ -13,10 +14,18 @@ DATA = Path(__file__).parent / "data"
 
 
 # ----------------------------- utils ---------------------------------------
-@pytest.mark.parametrize("raw,expect", [
-    ("chr1", "1"), ("Chr1", "1"), ("1", "1"),
-    ("chrX", "X"), ("chrM", "MT"), ("MT", "MT"), ("M", "MT"),
-])
+@pytest.mark.parametrize(
+    "raw,expect",
+    [
+        ("chr1", "1"),
+        ("Chr1", "1"),
+        ("1", "1"),
+        ("chrX", "X"),
+        ("chrM", "MT"),
+        ("MT", "MT"),
+        ("M", "MT"),
+    ],
+)
 def test_normalize_chrom(raw, expect):
     assert normalize_chrom(raw) == expect
 
@@ -31,8 +40,8 @@ def test_sniff_format():
 def test_parse_genepred_bin_and_coding():
     genes = list(parse(str(DATA / "mini.genepred"), "genepred"))
     by = {g.name: g for g in genes}
-    assert by["AAA"].biotype == "protein_coding"   # cdsStart < cdsEnd
-    assert by["BBB"].biotype == "non_coding"       # cdsStart == cdsEnd
+    assert by["AAA"].biotype == "protein_coding"  # cdsStart < cdsEnd
+    assert by["BBB"].biotype == "non_coding"  # cdsStart == cdsEnd
     # genePred txStart is already 0-based half-open
     assert (by["AAA"].chrom, by["AAA"].start, by["AAA"].end) == ("1", 1000, 2000)
 
@@ -71,17 +80,24 @@ def test_annotate_stream_appends_column_and_counts():
     lines = out.getvalue().strip().split("\n")
     assert lines[0].split("\t") == ["chr1", "1600", "1700", "AAA"]
     assert lines[1].split("\t")[3] == "CCC"
-    assert lines[2].split("\t")[3] == "."          # chr3 miss
+    assert lines[2].split("\t")[3] == "."  # chr3 miss
     assert stats.total == 3
     assert stats.annotated == 2
     assert stats.unannotated == 1
 
 
 # ----------------------------- sources -------------------------------------
-@pytest.mark.parametrize("alias,canon", [
-    ("hg19", "hg19"), ("grch37", "hg19"), ("GRCh38", "hg38"),
-    ("chm13", "t2t"), ("hs1", "t2t"), ("t2t", "t2t"),
-])
+@pytest.mark.parametrize(
+    "alias,canon",
+    [
+        ("hg19", "hg19"),
+        ("grch37", "hg19"),
+        ("GRCh38", "hg38"),
+        ("chm13", "t2t"),
+        ("hs1", "t2t"),
+        ("t2t", "t2t"),
+    ],
+)
 def test_genome_aliases(alias, canon):
     assert canonical_genome(alias) == canon
 

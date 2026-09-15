@@ -14,6 +14,7 @@ GENCODE GTFs (EBI) are offered as an alternative for hg19/hg38. Every source
 can be overridden at run time with ``--annotation-url`` or ``--annotation-file``,
 so the registry is a convenience, not a hard dependency.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -33,9 +34,17 @@ GENOME_DB = {"hg19": "hg19", "hg38": "hg38", "t2t": "hs1"}
 
 # Accepted aliases -> canonical key.
 GENOME_ALIASES = {
-    "hg19": "hg19", "grch37": "hg19", "b37": "hg19",
-    "hg38": "hg38", "grch38": "hg38", "b38": "hg38",
-    "t2t": "t2t", "chm13": "t2t", "hs1": "t2t", "chm13v2": "t2t", "chm13v2.0": "t2t",
+    "hg19": "hg19",
+    "grch37": "hg19",
+    "b37": "hg19",
+    "hg38": "hg38",
+    "grch38": "hg38",
+    "b38": "hg38",
+    "t2t": "t2t",
+    "chm13": "t2t",
+    "hs1": "t2t",
+    "chm13v2": "t2t",
+    "chm13v2.0": "t2t",
 }
 
 DEFAULT_SOURCE = "refseq"
@@ -47,7 +56,7 @@ class Source:
     key: str
     label: str
     url: str
-    fmt: str          # gtf | gff3 | genepred | bed
+    fmt: str  # gtf | gff3 | genepred | bed
     note: str = ""
 
 
@@ -58,31 +67,55 @@ def _ucsc(db: str, table: str) -> str:
 # (genome, source key) -> Source
 _REGISTRY: dict[str, dict[str, Source]] = {
     "hg19": {
-        "refseq": Source("hg19", "refseq", "RefSeq (UCSC ncbiRefSeq)",
-                         _ucsc("hg19", "ncbiRefSeq"), "genepred"),
-        "refgene": Source("hg19", "refgene", "RefSeq curated (UCSC refGene)",
-                          _ucsc("hg19", "refGene"), "genepred"),
-        "gencode": Source("hg19", "gencode", f"GENCODE v{_GC_VER} (lift37, basic)",
-                          f"{GENCODE.format(rel=_GC_REL)}/GRCh37_mapping/"
-                          f"gencode.v{_GC_VER}lift37.basic.annotation.gtf.gz", "gtf"),
+        "refseq": Source(
+            "hg19", "refseq", "RefSeq (UCSC ncbiRefSeq)", _ucsc("hg19", "ncbiRefSeq"), "genepred"
+        ),
+        "refgene": Source(
+            "hg19", "refgene", "RefSeq curated (UCSC refGene)", _ucsc("hg19", "refGene"), "genepred"
+        ),
+        "gencode": Source(
+            "hg19",
+            "gencode",
+            f"GENCODE v{_GC_VER} (lift37, basic)",
+            f"{GENCODE.format(rel=_GC_REL)}/GRCh37_mapping/"
+            f"gencode.v{_GC_VER}lift37.basic.annotation.gtf.gz",
+            "gtf",
+        ),
     },
     "hg38": {
-        "refseq": Source("hg38", "refseq", "RefSeq (UCSC ncbiRefSeq)",
-                         _ucsc("hg38", "ncbiRefSeq"), "genepred"),
-        "refgene": Source("hg38", "refgene", "RefSeq curated (UCSC refGene)",
-                          _ucsc("hg38", "refGene"), "genepred"),
-        "gencode": Source("hg38", "gencode", f"GENCODE v{_GC_VER} (basic)",
-                          f"{GENCODE.format(rel=_GC_REL)}/"
-                          f"gencode.v{_GC_VER}.basic.annotation.gtf.gz", "gtf"),
+        "refseq": Source(
+            "hg38", "refseq", "RefSeq (UCSC ncbiRefSeq)", _ucsc("hg38", "ncbiRefSeq"), "genepred"
+        ),
+        "refgene": Source(
+            "hg38", "refgene", "RefSeq curated (UCSC refGene)", _ucsc("hg38", "refGene"), "genepred"
+        ),
+        "gencode": Source(
+            "hg38",
+            "gencode",
+            f"GENCODE v{_GC_VER} (basic)",
+            f"{GENCODE.format(rel=_GC_REL)}/gencode.v{_GC_VER}.basic.annotation.gtf.gz",
+            "gtf",
+        ),
     },
     "t2t": {
-        "refseq": Source("t2t", "refseq", "RefSeq on CHM13v2.0 (UCSC hs1 ncbiRefSeq)",
-                         UCSC_GP.format(db="hs1", file="hs1.ncbiRefSeq"), "genepred",
-                         note="T2T-CHM13v2.0 (UCSC hs1). If unavailable, try "
-                              "--source catliftoff or supply --annotation-url."),
-        "catliftoff": Source("t2t", "catliftoff", "CAT/Liftoff gene set (UCSC hs1 catLiftOffGenesV1)",
-                             UCSC_GP.format(db="hs1", file="hs1.catLiftOffGenesV1"), "genepred",
-                             note="CHM13v2.0 CAT + Liftoff gene set."),
+        "refseq": Source(
+            "t2t",
+            "refseq",
+            "RefSeq on CHM13v2.0 (UCSC hs1 ncbiRefSeq)",
+            UCSC_GP.format(db="hs1", file="hs1.ncbiRefSeq"),
+            "genepred",
+            note="T2T-CHM13v2.0 (UCSC hs1). If unavailable, try "
+            "--source catliftoff or supply --annotation-url.",
+        ),
+        "catliftoff": Source(
+            "t2t",
+            "catliftoff",
+            "CAT/Liftoff gene set (UCSC hs1 catLiftOffGenesV1)",
+            "https://hgdownload.soe.ucsc.edu/hubs/GCA/009/914/755/"
+            "GCA_009914755.4/genes/catLiftOffGenesV1.gff3.gz",
+            "gff3",
+            note="CHM13v2.0 CAT + Liftoff gene set.",
+        ),
     },
 }
 
@@ -103,8 +136,7 @@ def resolve_source(genome: str, source: str) -> Source:
     key = source.strip().lower()
     if key not in table:
         raise KeyError(
-            f"Source '{source}' is not available for {g}. "
-            f"Available: {', '.join(table)}."
+            f"Source '{source}' is not available for {g}. Available: {', '.join(table)}."
         )
     return table[key]
 

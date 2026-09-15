@@ -5,7 +5,7 @@ genome build (hg19 / hg38 / t2t) and writes a BED file with a gene-name column.
 """
 
 __version__ = "1.0.0"
-__author__ = "BedBoy contributors"
+__author__ = "nliorni"
 __license__ = "MIT"
 
 from .annotate import GeneIndex, annotate_stream, build_index_from_file

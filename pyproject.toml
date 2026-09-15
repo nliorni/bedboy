@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "bedboy"
 version = "1.0.0"
-description = "The baddest BED annotator in the genome — add gene names to BED files for hg19/hg38/T2T."
+description = "Gene names, without leaving bed — annotate BED files for hg19/hg38/T2T."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "BedBoy contributors" }]
+authors = [{ name = "nliorni" }]
 keywords = ["bioinformatics", "bed", "genomics", "annotation", "gene", "hg38", "hg19", "t2t", "chm13"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 dependencies = [
@@ -51,3 +52,6 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
